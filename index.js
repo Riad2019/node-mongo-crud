@@ -1,35 +1,50 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 
 const MongoClient = require('mongodb').MongoClient;
 
 const password ='b3Xa*!7Qt98aCv7'
 
-const uri = "mongodb+srv://organicUser:b3Xa*!7Qt98aCv7@cluster0.vtemd.mongodb.net/organicdb?retryWrites=true&w=majority";
+const uri = "mongodb+srv://organicUser:PnaoiMXtkhfHLa1G@cluster0.vtemd.mongodb.net/organicdb?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}));
 
 app.get('/', (req, res) =>{
-    res.send('hello i m working')
+    res.sendFile(__dirname+'/index.html');
 })
 
-
-
-
-
 client.connect(err => {
-  const collection = client.db("organicdb").collection("products");
-  const product = {name: "modhu",price: 25 ,quantity: 20};
+  const productCollection = client.db("organicdb").collection("products");
+   
+  app.get('/products',(req, res) => {
 
-  collection.insertOne(product)
-  .then(result =>{
+    productCollection.find({})
+    .toArray((err,documents) => {
+      res.send(documents);
+    })
+  })
+
+
+
+  app.post("/addProduct",(req,res) =>{
+   const product =req.body;
+   productCollection.insertOne(product)
+  
+   .then(result =>{
     console.log('one product added' );
+    res.send('successfully');
+  })
+
+  
+  
   })
   // perform actions on the collection object
   console.log('database connected')
   //client.close();
 });
-
 
 app.listen(3000);
