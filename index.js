@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const MongoClient = require('mongodb').MongoClient;
-
+const ObjectId = require('mongodb').ObjectId;
 const password ='b3Xa*!7Qt98aCv7'
 
 const uri = "mongodb+srv://organicUser:PnaoiMXtkhfHLa1G@cluster0.vtemd.mongodb.net/organicdb?retryWrites=true&w=majority";
@@ -29,6 +29,13 @@ client.connect(err => {
   })
 
 
+  app.get('/product/:id',(req, res) => {
+
+    productCollection.find({_id: ObjectId (req.params.id)})
+    .toArray((err,documents) => {
+      res.send(documents[0]);
+    })
+  })
 
   app.post("/addProduct",(req,res) =>{
    const product =req.body;
@@ -45,6 +52,30 @@ client.connect(err => {
   // perform actions on the collection object
   console.log('database connected')
   //client.close();
+
+
+  app.patch('/update/:id', (req, res) =>
+  {
+    productCollection.updateOne({_id: ObjectId(req.params.id)},
+    {
+      $set: {price:req.body.price, quantity:req.body.quantity}
+    })
+    .then(result =>{
+      console.log(result);
+    })
+  })
+
+  app.delete('/delete/:id',(req,res)=>{
+    productCollection.deleteOne({_id: ObjectId(req.params.id)})
+    .then(result=>{
+      console.log(result);
+    })
+  })
+
+
+
+
+
 });
 
 app.listen(3000);
