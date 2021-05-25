@@ -32,11 +32,12 @@
             console.log(products);
         
         const container = document.getElementById('products')
+        container.innerHTML='';
         products.forEach(pd=>{
             const p = document.createElement('p');
             p.innerHTML =`<strong>${pd.name}</strong>-- price:${pd.price} quantity:${pd.quantity}
             <button onclick="UpdateProduct('${pd._id}')" >Update </button>
-        <button onclick="deleteProduct('${pd._id}')"> Delete</button>
+        <button onclick="deleteProduct(event,'${pd._id}')"> Delete</button>
             `
             container.appendChild(p);
 
@@ -48,7 +49,7 @@
         loadProduct(); 
          
         function UpdateProduct(id) {
-            fetch(`product/${id}`)
+            fetch(`/product/${id}`)
             .then(res=> res.json())
             .then(data=>{
                 const update= document.getElementById('update');
@@ -58,7 +59,7 @@
                 <br>
                 Quantity: <input type="text" value="${data.quantity}" id="quantity">
                 <br>
-                <button onClick="updating( ${data._id})">submit</button>
+                <button onClick="updating( '${data._id}')">submit</button>
                 `;
             })
         }
@@ -76,18 +77,25 @@
            })
            .then(res => res.json())
            .then(data =>{
-               console.log('updated');
+               if(data){
+                loadProduct(); 
+                const update= document.getElementById('update');
+                update.innerHTML='';
+               }
            })
 
        }
 
-        function deleteProduct(id){
+        function deleteProduct(event,id){
+            console.log(event.value);
             fetch(`/delete/${id}`,{
                 method:'Delete'
             })
             .then(res=> res.json())
             .then(result=>{
-               console.log('deleted successfully ')
+               if(result){
+                   event.target.parentNode.style.display='none'
+               }
             })
         }
 

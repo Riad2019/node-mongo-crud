@@ -43,14 +43,14 @@ client.connect(err => {
   
    .then(result =>{
     console.log('one product added' );
-    res.send('successfully');
+    res.redirect('/');
   })
 
   
   
   })
   // perform actions on the collection object
-  console.log('database connected')
+  console.log('database connected');
   //client.close();
 
 
@@ -61,14 +61,14 @@ client.connect(err => {
       $set: {price:req.body.price, quantity:req.body.quantity}
     })
     .then(result =>{
-      console.log(result);
+      res.send(result.modifiedCount>0)
     })
   })
 
   app.delete('/delete/:id',(req,res)=>{
     productCollection.deleteOne({_id: ObjectId(req.params.id)})
     .then(result=>{
-      console.log(result);
+      res.send(result.deletedCount>0);
     })
   })
 
